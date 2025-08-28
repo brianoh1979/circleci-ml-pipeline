@@ -128,9 +128,11 @@ jobs:
   
 
   deploy:
+    docker: 
+      - image: cimg/python:3.11.4
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
 
     steps:
       - attach_workspace:
@@ -138,10 +140,14 @@ jobs:
       - run:
           command: source ./venv/bin/activate && python3 ./ml/5_deploy.py
           name: Deploy the model
+
+
   test-deployment:
+    docker: 
+      - image: cimg/python:3.11.4
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
     steps:
       - attach_workspace:
           at: .
