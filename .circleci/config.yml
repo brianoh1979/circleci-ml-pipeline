@@ -34,15 +34,15 @@ commands:
 jobs:
   install-build:
     # For running on CircleCI's self-hosted runners
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
     # For running on CircleCI's compute resources you would replace the above with the following for all jobs:
-    # docker:
-    #   - image: cimg/python:3.11.4
+    docker:
+      - image: cimg/python:3.11.4
     steps:
       - checkout # Check out the code in the project directory
       - check-python # Invoke command "check-python"
-      - create-env     
+    #  - create-env     
       - run: 
           command: source ./tools/install.sh
           name: Run script to install dependencies
@@ -61,8 +61,10 @@ jobs:
             - tools # Persist the tools directory
   train:
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    docker:
+      - image: cimg/python:3.11.4
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
     steps: # Steps in jobs are run sequentially
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
@@ -76,9 +78,11 @@ jobs:
           paths:
             - ml # Only files in the ml directory have changed and need to be persisted back to the workspace
   test:
+    docker:
+      - image: cimg/python:3.11.4
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
     steps: # Steps in jobs are run sequentially
       - attach_workspace:
           at: .
@@ -86,9 +90,11 @@ jobs:
           command: source ./venv/bin/activate && python3 ./ml/3_test.py
           name: Test the model
   retrain:
+    docker:
+      - image: cimg/python:3.11.4
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
 
     steps:
       - attach_workspace:
@@ -107,9 +113,11 @@ jobs:
           paths:
             - ml # Only files in the ml directory have changed and need to be persisted back to the workspace
   package:
+    docker:
+      - image: cimg/python:3.11.4
     # For running on CircleCI's self-hosted runners - details taken from environment variables
-    machine: true
-    resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
+    #machine: true
+    #resource_class: RUNNER_NAMESPACE/RUNNER_RESOURCE_CLASS # Update this to reflect your self-hosted runner resource class details
 
     steps:
       - attach_workspace:
@@ -117,6 +125,8 @@ jobs:
       - run:
           command: source ./venv/bin/activate && python3 ./ml/4_package.py
           name: Package the model  
+  
+
   deploy:
     # For running on CircleCI's self-hosted runners - details taken from environment variables
     machine: true
@@ -150,7 +160,7 @@ workflows:
           filters:
             branches:
               only:
-                - main # Only run the job when the main branch is updated
+                - test # Only run the job when the main branch is updated
       - train:
           requires: # Only run the job when the preceding step in the ML process has been completed so that they are run sequentially
             - install-build
@@ -168,12 +178,12 @@ workflows:
             - test-1
             - test-2
       # Do not deploy without manual approval - you can inspect the console output from training and make sure you are happy to deploy
-      - deploy:
-          requires: 
-            - package 
-      - test-deployment:
-          requires:
-            - deploy
+      #- deploy:
+      #    requires: 
+      #      - package 
+      #- test-deployment:
+      #    requires:
+      #      - deploy
   retrain-deploy:
       # Trigger on a schedule or when retrain branch is updated
       triggers:
