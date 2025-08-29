@@ -53,16 +53,19 @@ tf.keras.models.save_model(
 # In this example, the staging location is on the same server as TensorFlow Serving deployment to keep things simple
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None  # Disable host keys checking - not for production
-remote_staging_path = os.getenv('DEPLOY_SERVER_PATH') + '/staging/' + version
+remote_staging_path = '/tmp/models/staging/' + version
 
 # Again, it pays to be verbose - any output will appear in the CircleCI web console for later inspection
 print('Uploading model to: ' + remote_staging_path)
 
-with pysftp.Connection(os.getenv('DEPLOY_SERVER_HOSTNAME'), username=os.getenv('DEPLOY_SERVER_USERNAME'), password=os.getenv('DEPLOY_SERVER_PASSWORD'), cnopts=cnopts) as sftp:
+#with pysftp.Connection(os.getenv('DEPLOY_SERVER_HOSTNAME'), username=os.getenv('DEPLOY_SERVER_USERNAME'), password=os.getenv('DEPLOY_SERVER_PASSWORD'), cnopts=cnopts) as sftp:
     # Make all non-existing directories
-    sftp.makedirs(remote_staging_path)
+#    sftp.makedirs(remote_staging_path)
     # The packaged model is a directory, so must use the put_r function to recursively upload it
-    sftp.put_r(temp_export_path, remote_staging_path)
+    local_staging_path = '/tmp/models/staging/' + version
+    os.makedirs(local_staging_path, exist_ok=True)
+    shutil.copytree(temp_export_path, local_staging_path, dirs_exist_ok=True)
+#     sftp.put_r(temp_export_path, remote_staging_path)
 
 print('\nSaved model version:' + version)
 
