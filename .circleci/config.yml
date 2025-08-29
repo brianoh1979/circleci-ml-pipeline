@@ -33,10 +33,8 @@ commands:
 # See: https://circleci.com/docs/jobs-steps/
 jobs:
   install-build:
-    # For running on CircleCI's self-hosted runners
     machine: true
-    resource_class: brianoh1979/personalmac # Update this to reflect your self-hosted runner resource class details
-    # For running on CircleCI's compute resources you would replace the above with the following for all jobs:
+    resource_class: brianoh1979/personalmac 
     steps:
       - checkout # Check out the code in the project directory
       - check-python # Invoke command "check-python"
@@ -58,10 +56,9 @@ jobs:
             - .env # Persist the .env file containing secrets
             - tools # Persist the tools directory
   train:
-    # For running on CircleCI's self-hosted runners - details taken from environment variables
     machine: true
     resource_class: brianoh1979/personalmac
-    steps: # Steps in jobs are run sequentially
+    steps: 
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           # In this example, the workspace root is the working directory (.)
@@ -76,12 +73,13 @@ jobs:
   test:
     machine: true
     resource_class: brianoh1979/personalmac
-    steps: # Steps in jobs are run sequentially
+    steps: 
       - attach_workspace:
           at: .
       - run:
           command: source ./venv/bin/activate && python3 ./ml/3_test.py
           name: Test the model
+
   retrain:
     machine: true
     resource_class: brianoh1979/personalmac
@@ -101,6 +99,7 @@ jobs:
           root: .
           paths:
             - ml # Only files in the ml directory have changed and need to be persisted back to the workspace
+
   package:
     machine: true
     resource_class: brianoh1979/personalmac    
@@ -141,10 +140,6 @@ workflows:
   build-deploy:
     jobs:
       - install-build:
-          filters:
-            branches:
-              only:
-                - test # Only run the job when the main branch is updated
       - train:
           requires: # Only run the job when the preceding step in the ML process has been completed so that they are run sequentially
             - install-build
