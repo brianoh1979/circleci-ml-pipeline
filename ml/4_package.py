@@ -62,9 +62,9 @@ print('Uploading model to: ' + remote_staging_path)
     # Make all non-existing directories
 #    sftp.makedirs(remote_staging_path)
     # The packaged model is a directory, so must use the put_r function to recursively upload it
-    local_staging_path = '/tmp/models/staging/' + version
-    os.makedirs(local_staging_path, exist_ok=True)
-    shutil.copytree(temp_export_path, local_staging_path, dirs_exist_ok=True)
+local_staging_path = '/tmp/models/staging/' + version
+os.makedirs(local_staging_path, exist_ok=True)
+shutil.copytree(temp_export_path, local_staging_path, dirs_exist_ok=True)
 #     sftp.put_r(temp_export_path, remote_staging_path)
 
 print('\nSaved model version:' + version)
