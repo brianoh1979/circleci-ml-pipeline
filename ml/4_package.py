@@ -12,6 +12,7 @@ import tensorflow as tf
 import os
 from dotenv import load_dotenv
 import pysftp
+import shutil
 
 # Get the path to this script
 script_dir = sys.path[0]
