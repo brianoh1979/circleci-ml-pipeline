@@ -26,8 +26,8 @@ commands:
   wait-5:
     steps:
       - run:
-          command: sleep 10
-          name: Wait 10 seconds
+          command: sleep 120
+          name: Wait 20 seconds
 
 # Define custom jobs for this config
 # See: https://circleci.com/docs/jobs-steps/
